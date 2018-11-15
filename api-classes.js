@@ -39,8 +39,12 @@ class StoryList {
       data: {
         token: user.loginToken
       },
-      success: () => {
-        console.log('Deleted!');
+      success: response => {
+        const storyIndex = this.stories.findIndex(
+          story => story.storyId === storyId
+        );
+        storyList.stories.splice(storyIndex, 1);
+        user.retrieveDetails(() => callback(this));
       }
     });
   }
