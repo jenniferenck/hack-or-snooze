@@ -31,10 +31,23 @@ class StoryList {
       }
     );
   }
+
+  removeStory(user, storyId, callback) {
+    $.ajax({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: 'DELETE',
+      data: {
+        token: user.loginToken
+      },
+      success: () => {
+        console.log('Deleted!');
+      }
+    });
+  }
 }
 
 class User {
-  constructor(username, password, name, loginToken, favorites, ownStories) {
+  constructor(username, password, name, loginToken) {
     this.username = username;
     this.password = password;
     this.name = name;
@@ -86,7 +99,7 @@ class User {
       response => {
         this.name = response.user.name;
         this.favorites = response.user.favorites;
-        this.ownStories = response.user.ownStories;
+        this.ownStories = response.user.stories;
         return callback(this);
       }
     );
@@ -118,13 +131,11 @@ User.create(
   function(newUser) {
     // this should be object containing newly created user
     user = newUser;
-    // console.log(user);
     // using the `user` variable from above:
     user.login(function(data) {
       // should be object containing user info along with loginToken
       // console.log(data);
       user.retrieveDetails(function(response) {
-        // console.log(response) // this should be the user
         // using the `user` and `storyList` variables from above:
         var newStoryData = {
           title: 'testing again',
@@ -133,9 +144,14 @@ User.create(
         };
         storyList.addStory(user, newStoryData, function(response) {
           // should be array of all stories including new story
-          console.log(response);
-          // should be array of all stories written by user
-          // console.log(user.stories);
+          console.log('Created a story: ', response);
+
+          var firstStory = user.ownStories[0];
+          console.log('firstStory: ', firstStory.storyId);
+
+          storyList.removeStory(user, firstStory.storyId, function(response) {
+            console.log('Deleted a story:', response);
+          });
         });
       });
     });
