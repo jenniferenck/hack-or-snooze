@@ -1,0 +1,74 @@
+body {
+  font-family: sans-serif;
+}
+
+.hack-or-snooze {
+  background-color: #f6f6ef;
+}
+
+.hack-or-snooze .navbar {
+  background-color: #e95420;
+  border-color: #d34615;
+}
+
+.hack-or-snooze nav h5 {
+  font-weight: 700;
+}
+
+.hack-or-snooze nav a {
+  color: black;
+}
+
+.hack-or-snooze nav a + a {
+  margin-left: 1.2rem;
+}
+
+ol li,
+ol li a small {
+  color: #828282;
+}
+
+ol li a {
+  color: #828282;
+}
+
+ol li a span {
+  color: black;
+}
+
+ol li a:hover {
+  text-decoration: none;
+}
+
+ol li a small:hover {
+  text-decoration: underline;
+}
+
+ol li {
+  padding: 5px 0;
+}
+
+ol li .icon-star-full {
+  display: none;
+}
+
+ol li.favorite .icon-star-full {
+  display: inline-block;
+}
+
+ol li.favorite .icon-star-empty {
+  display: none;
+}
+
+/* icon */
+
+.icon {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  position: relative;
+  top: -0.14rem;
+}
