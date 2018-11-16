@@ -1,5 +1,19 @@
 let stories;
 let user;
+
+// check localStorage for user on page load
+let token = localStorage.getItem('token');
+let username = localStorage.getItem('username');
+
+// if there's a user, grab their details
+if (token && username) {
+  let loggedInUser = new User(username);
+  loggedInUser.loginToken = token;
+  loggedInUser.retrieveDetails(details => {
+    user = details;
+  });
+}
+
 const $storyBoard = $('ol');
 
 // request all stories from API and assign to story list
