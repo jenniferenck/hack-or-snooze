@@ -48,7 +48,11 @@ $('#signUpForm').on('submit', function(event) {
   // create new user in API and update our local user
   User.create(username, password, name, function(newUser) {
     user = newUser;
-    console.log(user);
+    console.log('Created user: ', user);
+
+    $('#signUpName').val('');
+    $('#signUpUsername').val('');
+    $('#signUpPassword').val('');
   });
 });
 
@@ -60,10 +64,18 @@ $('#loginForm').on('submit', function(event) {
   const password = $('#loginFormPassword').val();
 
   User.login(username, password, function(response) {
-    console.log(response);
-    user = response.user;
-    user.loginToken = response.token;
-    console.log(user);
+    console.log('Login: ', response);
+
+    user = new User(
+      response.user.username,
+      response.user.password,
+      response.user.name,
+      response.token
+    );
+
+    console.log('Logged in: ', user);
+    $('#loginFormUsername').val('');
+    $('#loginFormPassword').val('');
   });
 });
 
@@ -73,6 +85,16 @@ $('#postNewStory').on('submit', function(event) {
 
   let title = $('#title').val();
   let url = $('#url').val();
+
+  const newStoryData = {
+    title,
+    author: user.name,
+    url
+  };
+
+  stories.addStory(user, newStoryData, function(response) {
+    console.log('Added story: ', response);
+  });
 
   const postTmpl = `
     <li>

@@ -18,15 +18,6 @@ class StoryList {
   }
 
   addStory(user, entryData, callback) {
-    /*
-    Story {
-      author: "testing6667"
-      storyId: "d661e762-962f-43f4-93d9-c511b9b83692"
-      title: "testing again"
-      url: "A Rithm Instructor"
-      username: "https://www.rithmschool.com"
-    }
-    */
     $.post(
       `${BASE_URL}/stories`,
       { token: user.loginToken, story: entryData },
