@@ -10,6 +10,41 @@ let username = localStorage.getItem('HOSJWT_Username');
 const $storyBoard = $('ol');
 const $userProfile = $('.user-profile');
 
+// if there's a user, grab their details
+if (token && username) {
+  let loggedInUser = new User(username);
+  loggedInUser.loginToken = token;
+  loggedInUser.retrieveDetails(details => {
+    user = details;
+    toggleUserView();
+  });
+}
+
+/*  toggle nav links into or out of view based on login */
+function toggleUserView() {
+  if (user) {
+    $('#submitToggle, #favoriteToggle, #displayProfile, #logoutUser').show();
+  } else {
+    $('#submitToggle, #favoriteToggle, #displayProfile, #logoutUser').hide();
+    // remove all favorited list items
+    $('li.favorite').removeClass('favorite');
+  }
+}
+
+/* request all stories from API and assign to story list */
+StoryList.getStories(function(response) {
+  stories = response;
+  console.log(stories);
+
+  // create a copy and filter story list to 10 most recent
+  const $mostRecentStories = Array.from(stories.stories).slice(0, 10);
+  console.log($mostRecentStories);
+
+  // build story list in HTML
+  postStories($mostRecentStories);
+});
+
+/* show user profile */
 $('#displayProfile').on('click', function(){
   // clear profile of previous data
   $userProfile.empty();
@@ -42,6 +77,8 @@ $('#displayProfile').on('click', function(){
           </tr>
         </table>
       `;
+
+      // append template to table
       $userProfile.append(userTmpl); 
       
       // append favorites to profile
@@ -53,49 +90,19 @@ $('#displayProfile').on('click', function(){
       response.user.stories.forEach(story => {
         $('#ownStories').append(`<p class="m-0">${story.title}</p>`);
       });
-
     }
   )
 });
 
-// if there's a user, grab their details
-if (token && username) {
-  let loggedInUser = new User(username);
-  loggedInUser.loginToken = token;
-  loggedInUser.retrieveDetails(details => {
-    user = details;
-    toggleUserView();
-  });
-}
-
-/*  toggle nav links */
-function toggleUserView() {
-  if (user) {
-    $('#submitToggle, #favoriteToggle, #displayProfile').show();
-  } else {
-    $('#submitToggle, #favoriteToggle, #displayProfile').hide();
-  }
-}
-
-/* request all stories from API and assign to story list */
-StoryList.getStories(function(response) {
-  stories = response;
-  console.log(stories);
-
-  // create a copy and filter story list to 10 most recent
-  const $mostRecentStories = Array.from(stories.stories).slice(0, 10);
-  console.log($mostRecentStories);
-
-  // build story list in HTML
-  postStories($mostRecentStories);
-});
-
 /* populate stories to the storyboard */
 const postStories = stories => {
+  // get all story ids that user has favorited
+  // const userFavorites = [];
+
   // iterate over each story and append post template to storyboard
   stories.forEach(story => {
     const postTmpl = `
-      <li id="${story.storyId}">
+      <li id="${story.storyId}" class="">
         <svg class="icon icon-star-empty star">
           <use xlink:href="#icon-star-empty"></use>
         </svg>
@@ -108,11 +115,12 @@ const postStories = stories => {
       </li>
     `;
 
+    // append template to storyboard
     $storyBoard.append(postTmpl);
   });
 };
 
-// add event listener for sign up
+/* event listener for sign up */
 $('#signUpForm').on('submit', function(event) {
   event.preventDefault();
 
@@ -133,7 +141,7 @@ $('#signUpForm').on('submit', function(event) {
   });
 });
 
-// add event listener for login
+/* add event listener for login */
 $('#loginForm').on('submit', function(event) {
   event.preventDefault();
 
@@ -155,7 +163,7 @@ $('#loginForm').on('submit', function(event) {
   });
 });
 
-// add event listener for posting a new story
+/* event listener for posting a new story */
 $('#postNewStory').on('submit', function(event) {
   event.preventDefault();
 
@@ -187,9 +195,12 @@ $('#postNewStory').on('submit', function(event) {
 
     $('ol').prepend(postTmpl);
 
+    $('#title').val('');
+    $('#url').val('');
   });
 });
 
+/* event listener for removing a story */
 $('ol').on('click', '.remove-story', function() {
   const story = $(this).closest('li');
   const storyId = story.attr('id');
@@ -202,7 +213,7 @@ $('ol').on('click', '.remove-story', function() {
 
 });
 
-// add event listener for Favorites link
+/* event listener for Favorites navbar link */
 $('#favoriteToggle').on('click', 'a', function() {
   // toggle text change between "Favorites" and "Show All"
   let linkText = $(this).text();
@@ -225,7 +236,7 @@ $('#favoriteToggle').on('click', 'a', function() {
   }
 });
 
-// add event listener for Favorites Star click through event delegation on the OL element
+/* event listener for Favorites Star click through event delegation on the OL element */
 $('ol').on('click', '.star', function() {
   if (user){
 
@@ -252,9 +263,7 @@ $('ol').on('click', '.star', function() {
   }
 });
 
-// add event listener for hostname
-// get hostname val
-// hide not val
+/* event listener for hostname toggle */
 $('ol').on('click', '.hostname', function() {
   let currHostname = $(this).text();
   $('ol li').each(function() {
@@ -267,3 +276,26 @@ $('ol').on('click', '.hostname', function() {
     }
   });
 });
+
+/* logout user */
+$('#logoutUser').on('click', function(){
+  user = undefined;
+  localStorage.clear();
+  toggleUserView();
+})
+
+// function to update favorites
+// retrieve user data at login or page refresh for favorites
+// add to DOM 
+
+// function updateFavorites(storyIds) {
+//   // go through OL story list and set all matching IDs to .favorite
+
+//   $.get(`${BASE_URL/users/username}`, 
+//     {
+//       user{
+        
+//       }
+//     }
+//   )
+// }

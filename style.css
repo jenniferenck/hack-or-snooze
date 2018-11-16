@@ -72,7 +72,7 @@ ol li.favorite .icon-star-empty {
   top: -0.14rem;
 }
 
-#submitToggle, #favoriteToggle {
+#submitToggle, #favoriteToggle, #displayProfile, #logoutUser {
   display: none;
 }
 
