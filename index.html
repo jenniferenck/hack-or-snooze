@@ -39,6 +39,54 @@
     </svg>
 
     <main class="container">
+
+    <!-- form -->
+    <h3>Sign Up</h3>
+    <form id="signUpForm">
+      <div class="form-group row">
+        <label for="signUpName" class="col-sm-2 col-lg-1 col-form-label"
+          >Name</label
+        >
+        <div class="col-sm-10 col-lg-11">
+          <input type="text" class="form-control" id="signUpName" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="signUpUsername" class="col-sm-2 col-lg-1 col-form-label">Username</label>
+        <div class="col-sm-10 col-lg-11">
+          <input type="text" class="form-control" id="signUpUsername" />
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="signUpPassword" class="col-sm-2 col-lg-1 col-form-label">Password</label>
+          <div class="col-sm-10 col-lg-11">
+            <input type="password" class="form-control" id="signUpPassword" />
+          </div>
+        </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <!-- // form -->
+
+    <!-- form -->
+    <h3>Login</h3>
+    <form id="loginForm">
+      <div class="form-group row">
+        <label for="loginFormUsername" class="col-sm-2 col-lg-1 col-form-label">Username</label>
+        <div class="col-sm-10 col-lg-11">
+          <input type="text" class="form-control" id="loginFormUsername" />
+        </div>
+      </div>
+      <div class="form-group row">
+          <label for="loginFormPassword" class="col-sm-2 col-lg-1 col-form-label">Password</label>
+          <div class="col-sm-10 col-lg-11">
+            <input type="password" class="form-control" id="loginFormPassword" />
+          </div>
+        </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <!-- // form -->
+
+    <!-- storyBoard -->
       <div class="hack-or-snooze mt-2">
         <nav class="navbar navbar-expand">
           <h5 class="navbar-brand mb-0">Hack or Snooze</h5>
@@ -53,62 +101,12 @@
         </nav>
 
         <ol class="py-1">
-          <li>
-            <svg class="icon icon-star-empty star">
-              <use xlink:href="#icon-star-empty"></use>
-            </svg>
-            <svg class="icon icon-star-full star">
-              <use xlink:href="#icon-star-full"></use>
-            </svg>
-            <a href="#">Visualizing Algorithms</a>
-            <a href="#" class="hostname"><small>(visualgo.net)</small></a>
-          </li>
-          <li>
-            <svg class="icon icon-star-empty star">
-              <use xlink:href="#icon-star-empty"></use>
-            </svg>
-            <svg class="icon icon-star-full star">
-              <use xlink:href="#icon-star-full"></use>
-            </svg>
-            <a href="#">Problem Solving with Rithm</a>
-            <a href="#" class="hostname"><small>(rithmschool.com)</small></a>
-          </li>
-          <li>
-            <svg class="icon icon-star-empty star">
-              <use xlink:href="#icon-star-empty"></use>
-            </svg>
-            <svg class="icon icon-star-full star">
-              <use xlink:href="#icon-star-full"></use>
-            </svg>
-            <a href="#">Buy this book!</a>
-            <a href="#" class="hostname"><small>(amazon.com)</small></a>
-          </li>
-          <li>
-            <svg class="icon icon-star-empty star">
-              <use xlink:href="#icon-star-empty"></use>
-            </svg>
-            <svg class="icon icon-star-full star">
-              <use xlink:href="#icon-star-full"></use>
-            </svg>
-            <a href="#">Dogs on GitHub</a>
-            <a href="#" class="hostname"><small>(github.com)</small></a>
-          </li>
-          <li>
-            <svg class="icon icon-star-empty star">
-              <use xlink:href="#icon-star-empty"></use>
-            </svg>
-            <svg class="icon icon-star-full star">
-              <use xlink:href="#icon-star-full"></use>
-            </svg>
-            <a href="#">MOAR PROBLEM SOLVING</a>
-            <a href="#" class="hostname"><small>(rithmschool.com)</small></a>
-          </li>
         </ol>
       </div>
-      <!-- // hack or snooze -->
+      <!-- // storyBoard -->
 
       <!-- form -->
-      <form>
+      <form id="postNewStory">
         <div class="form-group row">
           <label for="title" class="col-sm-2 col-lg-1 col-form-label"
             >Title</label
@@ -126,6 +124,7 @@
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
       <!-- // form -->
+
     </main>
 
     <script

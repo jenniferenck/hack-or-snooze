@@ -1,5 +1,4 @@
 const BASE_URL = 'https://hack-or-snooze-v2.herokuapp.com';
-let storyList;
 
 class StoryList {
   constructor(stories) {
@@ -81,9 +80,27 @@ class User {
       function(response) {
         const { token } = response;
         const { username, name } = response.user;
-        // localStorage goes here
+        localStorage.setItem('HOSJWT', token);
+        localStorage.setItem('HOSJWT_Username', username);
         const newUser = new User(username, password, name, token);
         return callback(newUser);
+      }
+    );
+  }
+
+  static login(username, password, callback) {
+    $.post(
+      `${BASE_URL}/login`,
+      {
+        user: {
+          username: username,
+          password: password
+        }
+      },
+      response => {
+        localStorage.setItem('HOSJWT', response.token);
+        localStorage.setItem('HOSJWT_Username', username);
+        return callback(response);
       }
     );
   }
@@ -115,23 +132,6 @@ class User {
         console.log(response);
       }
     });
-  }
-
-  login(callback) {
-    $.post(
-      `${BASE_URL}/login`,
-      {
-        user: {
-          username: this.username,
-          password: this.password
-        }
-      },
-      response => {
-        this.loginToken = response.token;
-        // localStorage goes here
-        return callback(response);
-      }
-    );
   }
 
   retrieveDetails(callback) {
@@ -192,73 +192,59 @@ class Story {
   }
 }
 
-// invoking static function
-StoryList.getStories(function(response) {
-  storyList = response;
-});
+//     // using the `user` variable from above:
+//     user.login(function(data) {
+//       // should be object containing user info along with loginToken
+//       // console.log(data);
+//       user.retrieveDetails(function(response) {
+//         // using the `user` and `storyList` variables from above:
+//         var newStoryData = {
+//           title: 'testing again',
+//           author: 'A Rithm Instructor',
+//           url: 'https://www.rithmschool.com'
+//         };
+//         storyList.addStory(user, newStoryData, function(response) {
+//           // should be array of all stories including new story
+//           var firstStory = user.ownStories[0];
+//           storyList.removeStory(user, firstStory.storyId, function(response) {
+//             // console.log('Deleted a story:', response);
+//           });
 
-let user;
-User.create(
-  `testing${Math.floor(Math.random() * 10000)}`,
-  `testing${Math.floor(Math.random() * 10000)}`,
-  `testing${Math.floor(Math.random() * 10000)}`,
+//           var newStoryData = {
+//             title: 'testing again',
+//             author: 'A Rithm Instructor',
+//             url: 'https://www.rithmschool.com'
+//           };
 
-  function(newUser) {
-    // this should be object containing newly created user
-    user = newUser;
-    // using the `user` variable from above:
-    user.login(function(data) {
-      // should be object containing user info along with loginToken
-      // console.log(data);
-      user.retrieveDetails(function(response) {
-        // using the `user` and `storyList` variables from above:
-        var newStoryData = {
-          title: 'testing again',
-          author: 'A Rithm Instructor',
-          url: 'https://www.rithmschool.com'
-        };
-        storyList.addStory(user, newStoryData, function(response) {
-          // should be array of all stories including new story
-          var firstStory = user.ownStories[0];
-          storyList.removeStory(user, firstStory.storyId, function(response) {
-            // console.log('Deleted a story:', response);
-          });
+//           storyList.addStory(user, newStoryData, function(response) {
+//             var firstStory = user.ownStories[0];
+//             user.addFavorite(firstStory.storyId, function(response) {
+//               console.log(firstStory.storyId, response); // this should include the added favorite!
+//             });
+//           });
 
-          var newStoryData = {
-            title: 'testing again',
-            author: 'A Rithm Instructor',
-            url: 'https://www.rithmschool.com'
-          };
-
-          storyList.addStory(user, newStoryData, function(response) {
-            var firstStory = user.ownStories[0];
-            user.addFavorite(firstStory.storyId, function(response) {
-              console.log(firstStory.storyId, response); // this should include the added favorite!
-            });
-          });
-
-          storyList.addStory(user, newStoryData, function(response) {
-            var firstStory = user.ownStories[0];
-            user.addFavorite(firstStory.storyId, function(response) {
-              user.removeFavorite(firstStory.storyId, function(response) {
-                // this should include the removed favorite!
-                console.log(response);
-                var updatedData = {
-                  title: 'NO MORE TESTING!',
-                  author: 'A Rithm Instructor',
-                  url: 'https://www.taco.com'
-                };
-                console.log('User story:', user.ownStories[0]);
-                user.ownStories[0].update(user, updatedData, function(
-                  response
-                ) {
-                  console.log(response); // this should be the updated story instance!
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  }
-);
+//           storyList.addStory(user, newStoryData, function(response) {
+//             var firstStory = user.ownStories[0];
+//             user.addFavorite(firstStory.storyId, function(response) {
+//               user.removeFavorite(firstStory.storyId, function(response) {
+//                 // this should include the removed favorite!
+//                 console.log(response);
+//                 var updatedData = {
+//                   title: 'NO MORE TESTING!',
+//                   author: 'A Rithm Instructor',
+//                   url: 'https://www.taco.com'
+//                 };
+//                 console.log('User story:', user.ownStories[0]);
+//                 user.ownStories[0].update(user, updatedData, function(
+//                   response
+//                 ) {
+//                   console.log(response); // this should be the updated story instance!
+//                 });
+//               });
+//             });
+//           });
+//         });
+//       });
+//     });
+//   }
+// );
