@@ -40,6 +40,8 @@ class StoryList {
           story => story.storyId === storyId
         );
         stories.stories.splice(storyIndex, 1);
+        //  ^^^^^^^ use `this`
+        // run the callback with currenty StoryList instance
         user.retrieveDetails(() => callback(this));
       }
     });
@@ -72,7 +74,7 @@ class User {
         localStorage.setItem('HOSJWT', token);
         localStorage.setItem('HOSJWT_Username', username);
         const newUser = new User(username, password, name, token);
-        return callback(newUser);
+        return callback(newUser); // <-- running callback with an instance of User
       }
     );
   }
@@ -82,18 +84,19 @@ class User {
       `${BASE_URL}/login`,
       {
         user: {
-          username: username,
-          password: password
+          username,
+          password
         }
       },
       response => {
         localStorage.setItem('HOSJWT', response.token);
         localStorage.setItem('HOSJWT_Username', username);
-        return callback(response);
+        return callback(response); // <-- NOT running callback with an instance of User
       }
     );
   }
 
+  // favor this over global user
   addFavorite(storyId, callback) {
     $.ajax({
       url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
@@ -107,6 +110,7 @@ class User {
     });
   }
 
+  // favor this over global user
   removeFavorite(storyId, callback) {
     $.ajax({
       url: `${BASE_URL}/users/${user.username}/favorites/${storyId}`,
@@ -180,60 +184,3 @@ class Story {
     });
   }
 }
-
-//     // using the `user` variable from above:
-//     user.login(function(data) {
-//       // should be object containing user info along with loginToken
-//       // console.log(data);
-//       user.retrieveDetails(function(response) {
-//         // using the `user` and `storyList` variables from above:
-//         var newStoryData = {
-//           title: 'testing again',
-//           author: 'A Rithm Instructor',
-//           url: 'https://www.rithmschool.com'
-//         };
-//         storyList.addStory(user, newStoryData, function(response) {
-//           // should be array of all stories including new story
-//           var firstStory = user.ownStories[0];
-//           storyList.removeStory(user, firstStory.storyId, function(response) {
-//             // console.log('Deleted a story:', response);
-//           });
-
-//           var newStoryData = {
-//             title: 'testing again',
-//             author: 'A Rithm Instructor',
-//             url: 'https://www.rithmschool.com'
-//           };
-
-//           storyList.addStory(user, newStoryData, function(response) {
-//             var firstStory = user.ownStories[0];
-            // user.addFavorite(firstStory.storyId, function(response) {
-            //   console.log(firstStory.storyId, response); // this should include the added favorite!
-            // });
-//           });
-
-//           storyList.addStory(user, newStoryData, function(response) {
-//             var firstStory = user.ownStories[0];
-//             user.addFavorite(firstStory.storyId, function(response) {
-//               user.removeFavorite(firstStory.storyId, function(response) {
-//                 // this should include the removed favorite!
-//                 console.log(response);
-//                 var updatedData = {
-//                   title: 'NO MORE TESTING!',
-//                   author: 'A Rithm Instructor',
-//                   url: 'https://www.taco.com'
-//                 };
-//                 console.log('User story:', user.ownStories[0]);
-//                 user.ownStories[0].update(user, updatedData, function(
-//                   response
-//                 ) {
-//                   console.log(response); // this should be the updated story instance!
-//                 });
-//               });
-//             });
-//           });
-//         });
-//       });
-//     });
-//   }
-// );

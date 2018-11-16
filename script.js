@@ -1,4 +1,4 @@
-const BASE_URL = "https://hack-or-snooze-v2.herokuapp.com";
+const BASE_URL = 'https://hack-or-snooze-v2.herokuapp.com';
 
 let stories;
 let user;
@@ -45,15 +45,21 @@ StoryList.getStories(function(response) {
 });
 
 /* show user profile */
-$('#displayProfile').on('click', function(){
+$('#displayProfile').on('click', function() {
   // clear profile of previous data
   $userProfile.empty();
 
   // retrieve user data
-  $.get(`${BASE_URL}/users/${user.username}`, 
-    { token },
-    function(response) {
-      const userTmpl = `
+  // $.get(`${BASE_URL}/users/${user.username}`, { token }, createUserTable)
+  // favor named callbacks for documentation ^^^^
+
+  // DON'T INVOKE!
+  // $.get(`${BASE_URL}/users/${user.username}`, { token }, createUserTable())
+
+  // might be equivalent to:
+  // $.get(`${BASE_URL}/users/${user.username}`, { token }, undefined)
+  $.get(`${BASE_URL}/users/${user.username}`, { token }, function(response) {
+    const userTmpl = `
         <table class="table table-striped">
           <tr>
             <th>Username:</th>
@@ -78,31 +84,27 @@ $('#displayProfile').on('click', function(){
         </table>
       `;
 
-      // append template to table
-      $userProfile.append(userTmpl); 
-      
-      // append favorites to profile
-      response.user.favorites.forEach(favorite => {
-        $('#userFavorites').append(`<p class="m-0">${favorite.title}</p>`);
-      });
+    // append template to table
+    $userProfile.append(userTmpl);
 
-      // append user stories to profile
-      response.user.stories.forEach(story => {
-        $('#ownStories').append(`<p class="m-0">${story.title}</p>`);
-      });
-    }
-  )
+    // append favorites to profile
+    response.user.favorites.forEach(favorite => {
+      $('#userFavorites').append(`<p class="m-0">${favorite.title}</p>`);
+    });
+
+    // append user stories to profile
+    response.user.stories.forEach(story => {
+      $('#ownStories').append(`<p class="m-0">${story.title}</p>`);
+    });
+  });
 });
 
 /* populate stories to the storyboard */
 const postStories = stories => {
-  // get all story ids that user has favorited
-  // const userFavorites = [];
-
   // iterate over each story and append post template to storyboard
   stories.forEach(story => {
     const postTmpl = `
-      <li id="${story.storyId}" class="">
+      <li id="${story.storyId}">
         <svg class="icon icon-star-empty star">
           <use xlink:href="#icon-star-empty"></use>
         </svg>
@@ -110,7 +112,9 @@ const postStories = stories => {
           <use xlink:href="#icon-star-full"></use>
         </svg>
         <a href="javascript:void(0)">${story.title}</a> 
-        <a href="javascript:void(0)" class="hostname"><small>(${story.url})</small></a>
+        <a href="javascript:void(0)" class="hostname"><small>(${
+          story.url
+        })</small></a>
         <small><a href="javascript:void(0)" class="remove-story">[remove]</a></small>
       </li>
     `;
@@ -145,9 +149,11 @@ $('#signUpForm').on('submit', function(event) {
 $('#loginForm').on('submit', function(event) {
   event.preventDefault();
 
+  // get form field values
   const username = $('#loginFormUsername').val();
   const password = $('#loginFormPassword').val();
 
+  // update user details
   User.login(username, password, function(response) {
     user = new User(
       response.user.username,
@@ -156,7 +162,10 @@ $('#loginForm').on('submit', function(event) {
       response.token
     );
 
+    // update navbar links visibility
     toggleUserView();
+
+    // reset form fields
     $('#loginFormUsername').val('');
     $('#loginFormPassword').val('');
     console.log('Logged in: ', user);
@@ -167,6 +176,7 @@ $('#loginForm').on('submit', function(event) {
 $('#postNewStory').on('submit', function(event) {
   event.preventDefault();
 
+  // get form field values
   let title = $('#title').val();
   let url = $('#url').val();
 
@@ -188,13 +198,17 @@ $('#postNewStory').on('submit', function(event) {
           <use xlink:href="#icon-star-full"></use>
         </svg>
         <a href="javascript:void(0)">${response.title}</a> 
-        <a href='javascript:void(0)' class='hostname'><small>(${response.url})</small></a>
+        <a href='javascript:void(0)' class='hostname'><small>(${
+          response.url
+        })</small></a>
         <small><a href="javascript:void(0)" class="remove-story">[remove]</a></small>
       </li>
     `;
 
+    // append stories to OL
     $('ol').prepend(postTmpl);
 
+    // reset form fields
     $('#title').val('');
     $('#url').val('');
   });
@@ -204,13 +218,12 @@ $('#postNewStory').on('submit', function(event) {
 $('ol').on('click', '.remove-story', function() {
   const story = $(this).closest('li');
   const storyId = story.attr('id');
-  
+
   // API call to remove story
   stories.removeStory(user, storyId, function(response) {
     story.remove();
-    console.log("success")
+    console.log('success');
   });
-
 });
 
 /* event listener for Favorites navbar link */
@@ -221,7 +234,9 @@ $('#favoriteToggle').on('click', 'a', function() {
   // if "Favorites"
   if (linkText === 'favorites') {
     // update link text
-    $('#favoriteToggle').find('a').text('show all');
+    $('#favoriteToggle')
+      .find('a')
+      .text('show all');
 
     // hide all LI elements that don't have a class of "favorite" with .hide()
     $('ol li')
@@ -229,7 +244,9 @@ $('#favoriteToggle').on('click', 'a', function() {
       .hide();
   } else {
     // update link text
-    $('#favoriteToggle').find('a').text('favorites');
+    $('#favoriteToggle')
+      .find('a')
+      .text('favorites');
 
     // else show all LI elements
     $('ol li').show();
@@ -238,16 +255,21 @@ $('#favoriteToggle').on('click', 'a', function() {
 
 /* event listener for Favorites Star click through event delegation on the OL element */
 $('ol').on('click', '.star', function() {
-  if (user){
-
+  if (user) {
     $(this)
-    .parent('li')
-    .toggleClass('favorite');
-    
+      .parent('li')
+      .toggleClass('favorite');
+
     // get parent('li') id and set to storyId
-    const storyId = $(this).parent('li').attr('id');
-    
-    if($(this).parent('li').hasClass('favorite')){
+    const storyId = $(this)
+      .parent('li')
+      .attr('id');
+
+    if (
+      $(this)
+        .parent('li')
+        .hasClass('favorite')
+    ) {
       // if favorited...
       // call function to add to API
       user.addFavorite(storyId, function(response) {
@@ -278,23 +300,23 @@ $('ol').on('click', '.hostname', function() {
 });
 
 /* logout user */
-$('#logoutUser').on('click', function(){
+$('#logoutUser').on('click', function() {
   user = undefined;
   localStorage.clear();
   toggleUserView();
-})
+});
 
 // function to update favorites
 // retrieve user data at login or page refresh for favorites
-// add to DOM 
+// add to DOM
 
 // function updateFavorites(storyIds) {
 //   // go through OL story list and set all matching IDs to .favorite
 
-//   $.get(`${BASE_URL/users/username}`, 
+//   $.get(`${BASE_URL/users/username}`,
 //     {
 //       user{
-        
+
 //       }
 //     }
 //   )
