@@ -8,6 +8,55 @@ let token = localStorage.getItem('HOSJWT');
 let username = localStorage.getItem('HOSJWT_Username');
 
 const $storyBoard = $('ol');
+const $userProfile = $('.user-profile');
+
+$('#displayProfile').on('click', function(){
+  // clear profile of previous data
+  $userProfile.empty();
+
+  // retrieve user data
+  $.get(`${BASE_URL}/users/${user.username}`, 
+    { token },
+    function(response) {
+      const userTmpl = `
+        <table class="table table-striped">
+          <tr>
+            <th>Username:</th>
+            <td>${response.user.username}</td>
+          </tr>
+          <tr>
+            <th>Name:</th>
+            <td>${response.user.name}</td>
+          </tr>
+          <tr>
+            <th>Created At:</th>
+            <td>${response.user.createdAt}</td>
+          </tr>
+          <tr>
+            <th>Favorites:</th>
+            <td id="userFavorites"></td>
+          </tr>
+          <tr>
+            <th>ownStories:</th>
+            <td id="ownStories"></td>
+          </tr>
+        </table>
+      `;
+      $userProfile.append(userTmpl); 
+      
+      // append favorites to profile
+      response.user.favorites.forEach(favorite => {
+        $('#userFavorites').append(`<p class="m-0">${favorite.title}</p>`);
+      });
+
+      // append user stories to profile
+      response.user.stories.forEach(story => {
+        $('#ownStories').append(`<p class="m-0">${story.title}</p>`);
+      });
+
+    }
+  )
+});
 
 // if there's a user, grab their details
 if (token && username) {
@@ -19,15 +68,16 @@ if (token && username) {
   });
 }
 
+/*  toggle nav links */
 function toggleUserView() {
-  // if (user) {
-  //   $('#submitToggle, #favoriteToggle').show();
-  // } else {
-  //   $('#submitToggle, #favoriteToggle').hide();
-  // }
+  if (user) {
+    $('#submitToggle, #favoriteToggle, #displayProfile').show();
+  } else {
+    $('#submitToggle, #favoriteToggle, #displayProfile').hide();
+  }
 }
 
-// request all stories from API and assign to story list
+/* request all stories from API and assign to story list */
 StoryList.getStories(function(response) {
   stories = response;
   console.log(stories);
@@ -40,7 +90,7 @@ StoryList.getStories(function(response) {
   postStories($mostRecentStories);
 });
 
-// // populate stories to the storyboard
+/* populate stories to the storyboard */
 const postStories = stories => {
   // iterate over each story and append post template to storyboard
   stories.forEach(story => {
@@ -52,9 +102,9 @@ const postStories = stories => {
         <svg class="icon icon-star-full star">
           <use xlink:href="#icon-star-full"></use>
         </svg>
-        <a href="#">${story.title}</a> <a href="${
-      story.url
-    }" class="hostname"><small>(${story.url})</small></a>
+        <a href="javascript:void(0)">${story.title}</a> 
+        <a href="javascript:void(0)" class="hostname"><small>(${story.url})</small></a>
+        <small><a href="javascript:void(0)" class="remove-story">[remove]</a></small>
       </li>
     `;
 
@@ -120,21 +170,36 @@ $('#postNewStory').on('submit', function(event) {
 
   stories.addStory(user, newStoryData, function(response) {
     console.log('Added story: ', response);
+
+    const postTmpl = `
+      <li id="${response.storyId}">
+        <svg class="icon icon-star-empty star">
+          <use xlink:href="#icon-star-empty"></use>
+        </svg>
+        <svg class="icon icon-star-full star">
+          <use xlink:href="#icon-star-full"></use>
+        </svg>
+        <a href="javascript:void(0)">${response.title}</a> 
+        <a href='javascript:void(0)' class='hostname'><small>(${response.url})</small></a>
+        <small><a href="javascript:void(0)" class="remove-story">[remove]</a></small>
+      </li>
+    `;
+
+    $('ol').prepend(postTmpl);
+
+  });
+});
+
+$('ol').on('click', '.remove-story', function() {
+  const story = $(this).closest('li');
+  const storyId = story.attr('id');
+  
+  // API call to remove story
+  stories.removeStory(user, storyId, function(response) {
+    story.remove();
+    console.log("success")
   });
 
-  const postTmpl = `
-    <li>
-      <svg class="icon icon-star-empty star">
-        <use xlink:href="#icon-star-empty"></use>
-      </svg>
-      <svg class="icon icon-star-full star">
-        <use xlink:href="#icon-star-full"></use>
-      </svg>
-      <a href="#">${title}</a> <a href='#' class='hostname'><small>(${url})</small></a>
-    </li>
-  `;
-
-  $('ol').append(postTmpl);
 });
 
 // add event listener for Favorites link
@@ -170,7 +235,6 @@ $('ol').on('click', '.star', function() {
     
     // get parent('li') id and set to storyId
     const storyId = $(this).parent('li').attr('id');
-    
     
     if($(this).parent('li').hasClass('favorite')){
       // if favorited...

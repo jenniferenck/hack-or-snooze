@@ -39,7 +39,7 @@ class StoryList {
         const storyIndex = this.stories.findIndex(
           story => story.storyId === storyId
         );
-        storyList.stories.splice(storyIndex, 1);
+        stories.stories.splice(storyIndex, 1);
         user.retrieveDetails(() => callback(this));
       }
     });

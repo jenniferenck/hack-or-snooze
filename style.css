@@ -75,3 +75,7 @@ ol li.favorite .icon-star-empty {
 #submitToggle, #favoriteToggle {
   display: none;
 }
+
+th {
+  vertical-align: top;
+}
