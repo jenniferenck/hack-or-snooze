@@ -1,5 +1,6 @@
 let stories;
 let user;
+const BASE_URL = "https://hack-or-snooze-v2.herokuapp.com";
 
 // check localStorage for user on page load
 let token = localStorage.getItem('token');

@@ -1,5 +1,3 @@
-const BASE_URL = 'https://hack-or-snooze-v2.herokuapp.com';
-
 class StoryList {
   constructor(stories) {
     this.stories = stories;
