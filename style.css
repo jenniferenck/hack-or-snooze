@@ -22,7 +22,6 @@ body {
 .hack-or-snooze nav a + a {
   margin-left: 1.2rem;
 }
-
 ol li,
 ol li a small {
   color: #828282;
@@ -71,4 +70,8 @@ ol li.favorite .icon-star-empty {
   fill: currentColor;
   position: relative;
   top: -0.14rem;
+}
+
+#submitToggle, #favoriteToggle {
+  display: none;
 }

@@ -207,9 +207,9 @@ class Story {
 
 //           storyList.addStory(user, newStoryData, function(response) {
 //             var firstStory = user.ownStories[0];
-//             user.addFavorite(firstStory.storyId, function(response) {
-//               console.log(firstStory.storyId, response); // this should include the added favorite!
-//             });
+            // user.addFavorite(firstStory.storyId, function(response) {
+            //   console.log(firstStory.storyId, response); // this should include the added favorite!
+            // });
 //           });
 
 //           storyList.addStory(user, newStoryData, function(response) {

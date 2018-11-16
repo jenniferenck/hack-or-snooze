@@ -1,10 +1,13 @@
-let stories;
-let user;
 const BASE_URL = "https://hack-or-snooze-v2.herokuapp.com";
 
+let stories;
+let user;
+
 // check localStorage for user on page load
-let token = localStorage.getItem('token');
-let username = localStorage.getItem('username');
+let token = localStorage.getItem('HOSJWT');
+let username = localStorage.getItem('HOSJWT_Username');
+
+const $storyBoard = $('ol');
 
 // if there's a user, grab their details
 if (token && username) {
@@ -12,10 +15,17 @@ if (token && username) {
   loggedInUser.loginToken = token;
   loggedInUser.retrieveDetails(details => {
     user = details;
+    toggleUserView();
   });
 }
 
-const $storyBoard = $('ol');
+function toggleUserView() {
+  // if (user) {
+  //   $('#submitToggle, #favoriteToggle').show();
+  // } else {
+  //   $('#submitToggle, #favoriteToggle').hide();
+  // }
+}
 
 // request all stories from API and assign to story list
 StoryList.getStories(function(response) {
@@ -65,6 +75,8 @@ $('#signUpForm').on('submit', function(event) {
     user = newUser;
     console.log('Created user: ', user);
 
+    toggleUserView();
+
     $('#signUpName').val('');
     $('#signUpUsername').val('');
     $('#signUpPassword').val('');
@@ -79,8 +91,6 @@ $('#loginForm').on('submit', function(event) {
   const password = $('#loginFormPassword').val();
 
   User.login(username, password, function(response) {
-    console.log('Login: ', response);
-
     user = new User(
       response.user.username,
       response.user.password,
@@ -88,9 +98,10 @@ $('#loginForm').on('submit', function(event) {
       response.token
     );
 
-    console.log('Logged in: ', user);
+    toggleUserView();
     $('#loginFormUsername').val('');
     $('#loginFormPassword').val('');
+    console.log('Logged in: ', user);
   });
 });
 
@@ -127,14 +138,14 @@ $('#postNewStory').on('submit', function(event) {
 });
 
 // add event listener for Favorites link
-$('#favoriteToggle').on('click', function() {
+$('#favoriteToggle').on('click', 'a', function() {
   // toggle text change between "Favorites" and "Show All"
   let linkText = $(this).text();
 
   // if "Favorites"
   if (linkText === 'favorites') {
     // update link text
-    $('#favoriteToggle').text('show all');
+    $('#favoriteToggle').find('a').text('show all');
 
     // hide all LI elements that don't have a class of "favorite" with .hide()
     $('ol li')
@@ -142,7 +153,7 @@ $('#favoriteToggle').on('click', function() {
       .hide();
   } else {
     // update link text
-    $('#favoriteToggle').text('favorites');
+    $('#favoriteToggle').find('a').text('favorites');
 
     // else show all LI elements
     $('ol li').show();
@@ -151,9 +162,30 @@ $('#favoriteToggle').on('click', function() {
 
 // add event listener for Favorites Star click through event delegation on the OL element
 $('ol').on('click', '.star', function() {
-  $(this)
+  if (user){
+
+    $(this)
     .parent('li')
     .toggleClass('favorite');
+    
+    // get parent('li') id and set to storyId
+    const storyId = $(this).parent('li').attr('id');
+    
+    
+    if($(this).parent('li').hasClass('favorite')){
+      // if favorited...
+      // call function to add to API
+      user.addFavorite(storyId, function(response) {
+        console.log('Added favorite:', response);
+      });
+    } else {
+      // if un-favorited...
+      user.removeFavorite(storyId, function(response) {
+        // this should include the removed favorite!
+        console.log('Remove favorite: ', response);
+      });
+    }
+  }
 });
 
 // add event listener for hostname
